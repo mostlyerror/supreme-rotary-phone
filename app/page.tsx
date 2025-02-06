@@ -6,7 +6,7 @@ export default function Home() {
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold mb-8">Daily Emotion Tracker</h1>
       <SignUpForm />
-      <ResponseList />
+      {/* <ResponseList /> */}
     </div>
   )
 }
