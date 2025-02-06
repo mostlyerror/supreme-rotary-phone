@@ -22,6 +22,16 @@ export default function RootLayout({
             <p className="mt-2 text-lg text-gray-600">Daily Emotion Tracker</p>
           </div>
           {children}
+          <footer className="text-center mt-12 text-sm text-gray-500">
+            <a 
+              href="https://github.com/mostlyerror" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="hover:text-purple-500 transition-colors"
+            >
+              Made with ❤️ by mostlyerror
+            </a>
+          </footer>
         </main>
       </body>
     </html>
