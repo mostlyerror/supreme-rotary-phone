@@ -1,32 +1,46 @@
-import { NextResponse } from "next/server"
 import { createClient } from '@supabase/supabase-js'
+import { NextResponse } from 'next/server'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 )
 
-export async function POST(req: Request) {
-  const { phoneNumber, notificationTime } = await req.json()
-
+export async function POST(request: Request) {
   try {
-    const { data: user, error } = await supabase
+    const { phoneNumber, notificationTime } = await request.json()
+
+    // Check if phone number already exists
+    const { data: existingUser } = await supabase
       .from('users')
-      .insert([
-        {
-          phone_number: phoneNumber,
-          notification_time: notificationTime,
-        }
-      ])
       .select()
+      .eq('phone_number', phoneNumber)
       .single()
 
-    if (error) throw error
+    if (existingUser) {
+      return NextResponse.json(
+        { error: "🐮 Moo-ps! This phone number is already registered" },
+        { status: 400 }
+      )
+    }
 
-    return NextResponse.json({ success: true, user })
+    const { error } = await supabase
+      .from('users')
+      .insert([{ phone_number: phoneNumber, notification_time: notificationTime }])
+
+    if (error) {
+      return NextResponse.json(
+        { error: "🐮 Moo-no! Something went wrong while signing up" },
+        { status: 500 }
+      )
+    }
+
+    return NextResponse.json({ message: "Success" })
   } catch (error) {
-    console.error("Error creating user:", error)
-    return NextResponse.json({ success: false, error: "Error creating user" }, { status: 500 })
+    return NextResponse.json(
+      { error: "🐮 Holy cow! An unexpected error occurred" },
+      { status: 500 }
+    )
   }
 }
 
