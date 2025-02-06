@@ -19,7 +19,7 @@ export default function RootLayout({
             <h1 className="text-4xl font-bold text-gray-800">
               Moo<span className="text-4xl">🐮</span><span className="text-purple-500">Minder</span>
             </h1>
-            <p className="mt-2 text-lg text-gray-600">Daily Emotion Tracker</p>
+            <p className="mt-2 text-lg text-gray-600">Daily emotion tracker: Mind your moooood.</p>
           </div>
           {children}
           <footer className="text-center mt-12 text-sm text-gray-500">
