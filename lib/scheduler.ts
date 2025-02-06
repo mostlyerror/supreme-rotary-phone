@@ -26,11 +26,11 @@ export function startScheduler() {
     for (const user of users) {
       try {
         await client.messages.create({
-          body: "How are you feeling today? Reply with one word describing your emotion.",
+          body: "🐮 Moo! How are you feeling today? Reply with one word describing your emotion.",
           from: process.env.TWILIO_PHONE_NUMBER!,
           to: user.phone_number,
         })
-        console.log(`Sent message to ${user.phone_number}`)
+        console.log(`Sent MooMinder message to ${user.phone_number}`)
       } catch (error) {
         console.error(`Error sending message to ${user.phone_number}:`, error)
       }
