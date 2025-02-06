@@ -1,6 +1,11 @@
 import { NextResponse } from "next/server"
-import { prisma } from "@/lib/prisma"
+import { createClient } from '@supabase/supabase-js'
 import twilio from "twilio"
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!
+)
 
 const client = twilio(process.env.TWILIO_ACCOUNT_SID!, process.env.TWILIO_AUTH_TOKEN!)
 
@@ -8,20 +13,32 @@ export async function POST(req: Request) {
   const { From, Body } = await req.json()
 
   try {
-    const user = await prisma.user.findUnique({
-      where: { phoneNumber: From },
-    })
+    // Find user
+    const { data: user, error: userError } = await supabase
+      .from('users')
+      .select()
+      .eq('phone_number', From)
+      .single()
 
-    if (!user) {
+    if (userError || !user) {
       return NextResponse.json({ error: "User not found" }, { status: 404 })
     }
 
-    const response = await prisma.response.create({
-      data: {
-        userId: user.id,
-        emotion: Body,
-      },
-    })
+    // Create response
+    const { data: response, error: responseError } = await supabase
+      .from('responses')
+      .insert([
+        {
+          user_id: user.id,
+          emotion: Body,
+        }
+      ])
+      .select()
+      .single()
+
+    if (responseError) {
+      throw responseError
+    }
 
     const message = await client.messages.create({
       body: `Thank you for sharing your emotion: ${Body}. We've recorded your response.`,

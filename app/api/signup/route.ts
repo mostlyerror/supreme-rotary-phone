@@ -1,16 +1,27 @@
 import { NextResponse } from "next/server"
-import { prisma } from "@/lib/prisma"
+import { createClient } from '@supabase/supabase-js'
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!
+)
 
 export async function POST(req: Request) {
   const { phoneNumber, notificationTime } = await req.json()
 
   try {
-    const user = await prisma.user.create({
-      data: {
-        phoneNumber,
-        notificationTime,
-      },
-    })
+    const { data: user, error } = await supabase
+      .from('users')
+      .insert([
+        {
+          phone_number: phoneNumber,
+          notification_time: notificationTime,
+        }
+      ])
+      .select()
+      .single()
+
+    if (error) throw error
 
     return NextResponse.json({ success: true, user })
   } catch (error) {
