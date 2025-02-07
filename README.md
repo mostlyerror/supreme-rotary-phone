@@ -40,6 +40,8 @@ TWILIO_PHONE_NUMBER=your_twilio_phone_number
 
 ### Local Development
 
+Note: Docker must be running to start the local Supabase instance.
+
 Start the local Supabase instance:
 ```bash
 npx supabase start

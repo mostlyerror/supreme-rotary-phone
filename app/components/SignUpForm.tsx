@@ -25,31 +25,40 @@ export default function SignUpForm() {
     e.preventDefault()
     
     try {
-      const res = await fetch("/api/signup", {
+      const response = await fetch("/api/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ phoneNumber, notificationTime, timezone }),
       })
-      
-      if (!res.ok) {
-        const data = await res.json()
-        throw new Error(data.error || "Failed to sign up")
+
+      const result = await response.json()
+
+      if (!response.ok) {
+        console.error('Signup error:', result)
+        console.log('About to show toast with:', result.error)
+        toast({
+          title: "Error",
+          description: result.error,
+          variant: "destructive",
+        })
+        return
       }
 
+      console.log('Signup success:', result)  // Log the success details
       toast({
-        title: "Success!",
-        description: "🐮 Moo-velous! You're all signed up!",
-        variant: "default"
+        title: "Success",
+        description: result.message || "You've been signed up!",
       })
       
       setPhoneNumber("")
       setNotificationTime("21:00")
       router.refresh()
-    } catch (err) {
+    } catch (error) {
+      console.error('Signup failed:', error)  // Log any fetch or parsing errors
       toast({
         title: "Error",
-        description: err instanceof Error ? err.message : "Something went wrong",
-        variant: "destructive"
+        description: "Unable to complete signup. Please try again.",
+        variant: "destructive",
       })
     }
   }
