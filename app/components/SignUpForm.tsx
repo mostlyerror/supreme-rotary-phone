@@ -4,6 +4,7 @@ import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import TimezoneSelect from "./TimezoneSelect"
 import { useToast } from "@/hooks/use-toast"
+import { createClient } from '@/utils/supabase/client'
 
 // Move timezone list outside component
 const TIMEZONES = Intl.supportedValuesOf('timeZone')
@@ -14,6 +15,7 @@ export default function SignUpForm() {
   const [timezone, setTimezone] = useState("America/Denver")
   const { toast } = useToast()
   const router = useRouter()
+  const supabase = createClient()
   
   useEffect(() => {
     setTimezone(Intl.DateTimeFormat().resolvedOptions().timeZone)

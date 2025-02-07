@@ -1,21 +1,28 @@
-import { createClient } from '@supabase/supabase-js'
 import { NextResponse } from 'next/server'
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-)
+import { cookies } from 'next/headers'
+import { createClient } from '@/utils/supabase/server'
 
 export async function POST(request: Request) {
+  const cookieStore = cookies()
+  const supabase = createClient(cookieStore)
+
   try {
     const { phoneNumber, notificationTime, timezone } = await request.json()
 
     // Check if phone number already exists
-    const { data: existingUser } = await supabase
+    const { data: existingUser, error: selectError } = await supabase
       .from('users')
       .select()
       .eq('phone_number', phoneNumber)
       .single()
+
+    if (selectError && selectError.code !== 'PGRST116') { // Ignore "no rows returned" error
+      console.error('Select error:', selectError)
+      return NextResponse.json(
+        { error: "Error checking existing user" },
+        { status: 500 }
+      )
+    }
 
     if (existingUser) {
       return NextResponse.json(
@@ -24,7 +31,7 @@ export async function POST(request: Request) {
       )
     }
 
-    const { error } = await supabase
+    const { error: insertError } = await supabase
       .from('users')
       .insert([{ 
         phone_number: phoneNumber, 
@@ -32,15 +39,17 @@ export async function POST(request: Request) {
         timezone: timezone 
       }])
 
-    if (error) {
+    if (insertError) {
+      console.error('Insert error:', insertError)
       return NextResponse.json(
-        { error: "🐮 Moo-no! Something went wrong while signing up" },
+        { error: `🐮 Moo-no! ${insertError.message}` },
         { status: 500 }
       )
     }
 
     return NextResponse.json({ message: "Success" })
   } catch (error) {
+    console.error('Unexpected error:', error)
     return NextResponse.json(
       { error: "🐮 Holy cow! An unexpected error occurred" },
       { status: 500 }
