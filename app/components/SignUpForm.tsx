@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import TimezoneSelect from "./TimezoneSelect"
-import { useToast } from "@/hooks/use-toast"
+import toast from 'react-hot-toast'
 import { createClient } from '@/utils/supabase/client'
 
 // Move timezone list outside component
@@ -13,7 +13,6 @@ export default function SignUpForm() {
   const [phoneNumber, setPhoneNumber] = useState("")
   const [notificationTime, setNotificationTime] = useState("21:00")
   const [timezone, setTimezone] = useState("America/Denver")
-  const { toast } = useToast()
   const router = useRouter()
   const supabase = createClient()
   
@@ -35,31 +34,19 @@ export default function SignUpForm() {
 
       if (!response.ok) {
         console.error('Signup error:', result)
-        console.log('About to show toast with:', result.error)
-        toast({
-          title: "Error",
-          description: result.error,
-          variant: "destructive",
-        })
+        toast.error(result.error)
         return
       }
 
-      console.log('Signup success:', result)  // Log the success details
-      toast({
-        title: "Success",
-        description: result.message || "You've been signed up!",
-      })
+      console.log('Signup success:', result)
+      toast.success('🐮 Moo-velous! You\'re all signed up!')
       
       setPhoneNumber("")
       setNotificationTime("21:00")
       router.refresh()
     } catch (error) {
-      console.error('Signup failed:', error)  // Log any fetch or parsing errors
-      toast({
-        title: "Error",
-        description: "Unable to complete signup. Please try again.",
-        variant: "destructive",
-      })
+      console.error('Signup failed:', error)
+      toast.error('Unable to complete signup. Please try again.')
     }
   }
 

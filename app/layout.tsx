@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import './globals.css'
+import { Toaster } from 'react-hot-toast'
 
 export const metadata: Metadata = {
   title: 'MooMinder',
@@ -22,6 +23,7 @@ export default function RootLayout({
             <p className="mt-2 text-lg text-gray-600">Daily emotion tracker: Mind your moooood.</p>
           </div>
           {children}
+          <Toaster position="top-center" />
           <footer className="text-center mt-12 text-sm text-gray-500">
             <a 
               href="https://github.com/mostlyerror" 
