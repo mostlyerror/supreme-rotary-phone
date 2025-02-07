@@ -8,7 +8,7 @@ const supabase = createClient(
 
 export async function POST(request: Request) {
   try {
-    const { phoneNumber, notificationTime } = await request.json()
+    const { phoneNumber, notificationTime, timezone } = await request.json()
 
     // Check if phone number already exists
     const { data: existingUser } = await supabase
@@ -26,7 +26,11 @@ export async function POST(request: Request) {
 
     const { error } = await supabase
       .from('users')
-      .insert([{ phone_number: phoneNumber, notification_time: notificationTime }])
+      .insert([{ 
+        phone_number: phoneNumber, 
+        notification_time: notificationTime,
+        timezone: timezone 
+      }])
 
     if (error) {
       return NextResponse.json(
