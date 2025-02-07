@@ -1,6 +1,6 @@
 'use client'
 
-import { useClientMount } from '../hooks/useClientMount'
+import { useClientMount } from '@/hooks/use-client-mount'
 
 const TIMEZONES = Intl.supportedValuesOf('timeZone')
 
